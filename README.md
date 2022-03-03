@@ -33,13 +33,21 @@ interface Icon {
 }
 ```
 
-## Endpoints
-
-- `/icons/`: Get all the icons (returns `Icon[]`)
-- `/icons/:id`: Get specific icon (returns `Icon`)
-
 ## Query Options
 
 - limit: The number of item displayed (25 by default)
 - offset: The number of item to skip (0 by default)
 - select: Comma separated fields that you want in response (all by default)
+- search: Search for a specific word in icon's name or aliases
+- type: `filled` or `outlined`. Something else will send back both
+
+## Endpoints
+
+- `/icons/`: Get all the icons (returns `Icon[]`). Supported options :
+  - `limit`
+  - `offset`
+  - `select`
+  - `search`
+  - `type`
+- `/icons/:id`: Get specific icon (returns `Icon`). Supported options :
+  - `select`

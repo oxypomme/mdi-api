@@ -2,35 +2,79 @@ const express = require('express');
 const router = express.Router();
 const { getMDIIcons } = require('../cache');
 
-/* GET MDI icons, from cache or from net */
-router.get('/', async (req, res) => {
-  const { limit: l, offset: o, select } = req.query;
-  const selectArr = select ? select.split(',') : undefined;
-  try {
-    const rawIcons = await getMDIIcons();
+/**
+ * Apply filters
+ *
+ * @param {any[]} data The data to send
+ * @param {any} params The filters to apply
+ *
+ * @returns filtred data
+ */
+const applyFilters = (data, {offset, limit, select, search, type}) => {
+  // Parsing & default values
+  offset = offset ? parseInt(offset) : 0;
+  limit = limit ? parseInt(limit) : 25;
+  select = select ? select.split(',') : undefined;
 
-    const offset = o ? parseInt(o) : 0;
-    const limit = l ? parseInt(l) : 25;
+  // Filtering by type
+  if(type) {
+    if(type == "filled") {
+      data = data.filter(({name}) => !name.endsWith('-outline'))
+    } else if(type == "outline") {
+      data = data.filter(({name}) => name.endsWith('-outline'))
+    }
+  }
 
-    const icons = rawIcons.slice(
-      offset,
-      limit + offset
-    ).map((icon) => {
+  // Filtering by search content
+  if(search) {
+    data = data.filter(({name, aliases}) => {
+      const s = search.toLowerCase();
+      // Check in name
+      if(name.includes(s)) {
+        return true
+      }
+      // Check in aliases
+      for (const alias of aliases) {
+        if(alias.includes(s)) {
+          return true;
+        }
+      }
+      // Check failed
+      return false;
+    })
+  }
+
+  const total = data.length;
+  // Slicing data
+  data = data.slice(offset, limit+offset);
+
+  // Selecting fields
+  if(select) {
+    data = data.map((icon) => {
       const obj = {};
       for (const [key, value] of Object.entries(icon)) {
-        if(!selectArr || selectArr.includes(key)) {
-          obj[key] = value;
+        if(select.includes(key)) {
+          obj[key] = value
         }
       }
       return obj;
     })
+  }
 
-    res.send({
-      total: rawIcons.length,
-      count: icons.length,
-      offset: offset ?? 0,
-      data: icons
-    });
+  return {
+    total,
+    count: data.length,
+    offset,
+    data,
+  };
+}
+
+/* GET MDI icons, from cache or from net */
+router.get('/', async (req, res) => {
+  try {
+    const icons = await getMDIIcons();
+
+    res.send(applyFilters(icons, req.query));
   } catch (error) {
     res.status(500).send({
       status: 500,
@@ -42,22 +86,12 @@ router.get('/', async (req, res) => {
 /* GET specific MDI icons, from cache or from net */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
-  const { select } = req.query;
-  const selectArr = select ? select.split(',') : undefined;
   try {
     const icon = (await getMDIIcons()).find(({id: iid}) => iid === id);
     if(icon) {
-      const obj = {};
-      for (const [key, value] of Object.entries(icon)) {
-        if(!selectArr || selectArr.includes(key)) {
-          obj[key] = value;
-        }
-      }
-
-      res.send({
-        count: 1,
-        data: obj
-      });
+      res.send(applyFilters([icon], {
+        select: req.query.select
+      }));
     } else {
       res.status(404).send({
         status: 404,
