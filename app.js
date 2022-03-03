@@ -5,9 +5,9 @@ const indexRouter = require('./routes/index');
 
 const app = express();
 
-app.use(logger('dev'));
+app.use(logger(process.env.NODE_ENV === "production" ? undefined : 'dev'));
 app.use(express.json());
 
-app.use('/', indexRouter);
+app.use('/icons', indexRouter);
 
 module.exports = app;
