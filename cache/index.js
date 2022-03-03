@@ -16,7 +16,7 @@ const writeMDIIcons = async () => {
 		icons: data.icons,
 		updated: dayjs(),
 	}))
-	return data.items;
+	return data.icons;
 }
 
 /**
