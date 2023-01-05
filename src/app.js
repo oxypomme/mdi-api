@@ -12,5 +12,6 @@ app.use(logger(process.env.NODE_ENV === "production" ? undefined : 'dev'));
 app.use(express.json());
 
 app.use('/icons', indexRouter);
+app.use(express.static('public'));
 
 module.exports = app;
