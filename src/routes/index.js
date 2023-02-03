@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getMDIIcons } = require('../cache');
+const { getMDIIcons } = require('../models/icons');
 
 /**
  * Apply filters
@@ -69,7 +69,7 @@ const applyFilters = (data, {offset, limit, select, search, type}) => {
   };
 }
 
-/* GET MDI icons, from cache or from net */
+/* GET MDI icons */
 router.get('/', async (req, res) => {
   try {
     const icons = await getMDIIcons();
@@ -83,7 +83,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-/* GET specific MDI icons, from cache or from net */
+/* GET specific MDI icons */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
