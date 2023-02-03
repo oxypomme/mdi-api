@@ -76,6 +76,7 @@ router.get('/', async (req, res) => {
 
     res.send(applyFilters(icons, req.query));
   } catch (error) {
+    console.error('Unexpected error:', error.message);
     res.status(500).send({
       status: 500,
       message: typeof error === "object" ? error.message : error,
@@ -99,6 +100,7 @@ router.get('/:id', async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Unexpected error:', error.message);
     res.status(500).send({
       status: 500,
       message: typeof error === "object" ? error.message : error,
