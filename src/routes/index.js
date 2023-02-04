@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getMDIIcons } = require('../cache');
+const { getMDIIcons } = require('../models/icons');
 
 /**
  * Apply filters
@@ -69,13 +69,14 @@ const applyFilters = (data, {offset, limit, select, search, type}) => {
   };
 }
 
-/* GET MDI icons, from cache or from net */
+/* GET MDI icons */
 router.get('/', async (req, res) => {
   try {
     const icons = await getMDIIcons();
 
     res.send(applyFilters(icons, req.query));
   } catch (error) {
+    console.error('Unexpected error:', error.message);
     res.status(500).send({
       status: 500,
       message: typeof error === "object" ? error.message : error,
@@ -83,7 +84,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-/* GET specific MDI icons, from cache or from net */
+/* GET specific MDI icons */
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -99,6 +100,7 @@ router.get('/:id', async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Unexpected error:', error.message);
     res.status(500).send({
       status: 500,
       message: typeof error === "object" ? error.message : error,

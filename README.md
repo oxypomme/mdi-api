@@ -1,8 +1,8 @@
 # MDI API
 
-Simple wrapper of [Material Design Icons](https://materialdesignicons.com/) with a few more options.
+Simple wrapper of [Material Design Icons](https://github.com/Templarian/MaterialDesign-SVG) with a few more options.
 
-All responses from [Material Design Icons](https://materialdesignicons.com/) are cached for 7 days.
+The responses are based on the `meta.json` given by the `@mdi/svg` package. Current version is `7.1.96` (11/12/2022)
 
 ## Data type
 

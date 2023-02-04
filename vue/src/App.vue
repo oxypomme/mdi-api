@@ -78,7 +78,7 @@
               </v-btn>
             </template>
           </v-tooltip>
-  
+
           <v-tooltip top text="Documentation - Coming soon" location="top">
             <template #activator="{ props }">
               <v-btn class="ml-1" icon to="/docs" v-bind="props">
@@ -177,7 +177,7 @@ const getIcons = async () => {
       icons.value = data.map(({ name }) => name)
       maxPage.value = Math.ceil(total / API_LIMIT)
     } catch (error) {
-      
+      // TODO
     }
     isLoading.value = false
   }
